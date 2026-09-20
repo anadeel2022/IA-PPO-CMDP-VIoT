@@ -1,172 +1,169 @@
 # Reproducibility Guide
 
-This document records the frozen experimental protocol for the manuscript **Intent-Aware Risk-Constrained Reinforcement Learning for Request-Level Service Scheduling in RSU-Assisted Vehicular IoT**.
+This document records the frozen protocol for **Intent-Aware Risk-Constrained Reinforcement Learning for Request-Level Service Scheduling in RSU-Assisted Vehicular IoT**.
 
-The code and commands below will be finalized after the source audit. The numerical protocol itself is frozen and must not be retuned to improve the final seeds.
-
-## 1. Core system
+## Core system
 
 The simulator is request-level and uses a centralized RSU scheduler.
 
 - Devices: 24
-- Channels: 3
-- Channel bandwidth: 1 MHz each
-- Slot duration: 1 ms
-- Candidate requests per decision: 4
+- Channels: 3 × 1 MHz
+- Slot: 1 ms
+- Candidate requests: 4
 - Modes: defer, grant, protect, coexist, reject
-- Discrete actions: 4 × 5 = 20
+- Actions: 20
 - Base state: 45 dimensions
 - Intent context: 15 dimensions
 - Policy input: 60 dimensions
 
-Exact request conservation is enforced:
+Request accounting satisfies exactly:
 
 ```text
 arrivals = completed + rejected + pending
 ```
 
-## 2. Final service intents
+## Service classes
+
+| Class | Rate (req/s) | Base payload (bits) | Deadline (ms) | Tx power (dBm) | Battery (J) | Priority |
+|---|---:|---:|---:|---:|---:|---:|
+| Safety/Emergency | 20 | 4000 | 20 | 18 | 50 | 1.40 |
+| Telemetry | 10 | 2500 | 100 | 12 | 30 | 1.00 |
+| Best Effort | 4 | 1800 | 250 | 8 | 20 | 0.85 |
+
+The paper uses `bits_scale=2.0`, giving reference payloads of 8000, 5000, and 3600 bits before device-level jitter.
+
+## Final intents
 
 ### Balanced
 
-- Blocking target: 0.060
-- Interruption target: 0.200
-- Effective deadline: 80 ms
-- Deadline-exposure target: 0.70
-- Minimum service success: 0.60
-- Minimum fairness: 0.50
-- Throughput floor: 2.50 Mbps
+- blocking ≤ 0.060
+- interruption ≤ 0.200
+- effective deadline = 80 ms
+- deadline exposure ≤ 0.70
+- service success ≥ 0.60
+- fairness ≥ 0.50
+- throughput ≥ 2.50 Mbps
+
+Weights: block 1.00, interruption 1.15, deadline exposure 1.20, success 1.05, fairness 0.65, energy 0.20, utilization 0.20, throughput 0.95.
 
 ### Reliability-First
 
-- Blocking target: 0.030
-- Interruption target: 0.160
-- Effective deadline: 80 ms
-- Deadline-exposure target: 0.72
-- Minimum service success: 0.60
-- Minimum fairness: 0.50
-- Throughput floor: 2.40 Mbps
+- blocking ≤ 0.030
+- interruption ≤ 0.160
+- effective deadline = 80 ms
+- deadline exposure ≤ 0.72
+- service success ≥ 0.60
+- fairness ≥ 0.50
+- throughput ≥ 2.40 Mbps
+
+Weights: block 1.30, interruption 2.20, deadline exposure 1.10, success 1.00, fairness 0.35, energy 0.10, utilization 0.20, throughput 0.65.
 
 ### Latency-Critical
 
-- Blocking target: 0.100
-- Interruption target: 0.350
-- Effective deadline: 70 ms
-- Deadline-exposure target: 0.60
-- Minimum service success: 0.75
-- Minimum fairness: 0.50
-- Throughput floor: 3.00 Mbps
+- blocking ≤ 0.100
+- interruption ≤ 0.350
+- effective deadline = 70 ms
+- deadline exposure ≤ 0.60
+- service success ≥ 0.75
+- fairness ≥ 0.50
+- throughput ≥ 3.00 Mbps
 
-Energy efficiency is inactive for the three manuscript intents. The minimum-utilization target is 0.10.
+Weights: block 0.55, interruption 0.55, deadline exposure 2.40, success 1.65, fairness 0.30, energy 0.10, utilization 0.20, throughput 1.35.
 
-## 3. Training and evaluation
+The energy-efficiency objective is inactive for these three manuscript intents. Minimum utilization is 0.10.
 
-Final independent master seeds:
+## IA-PPO-CMDP
+
+The manuscript method is `IA-PPO-CMDP`; the internal code identifier is `Intent-PPO-CMDP`.
+
+The frozen implementation combines:
+
+- universal intent-conditioned PPO;
+- target-centered cumulative service-risk estimates with κ=10;
+- outcome-pressure compilation;
+- risk signal `rho = 0.55 * nu + 0.45 * omega`;
+- 45-step rolling risk memory;
+- 90th-percentile upper-tail training statistic;
+- deployment admission shield;
+- PPO reward clipping to [-5, 5].
+
+The training upper-tail mechanism is distinct from the episode-level CVaR95 evaluation metric.
+
+## PPO training protocol
+
+- hidden layers: 128, 128
+- gamma: 0.99
+- GAE lambda: 0.95
+- PPO clip: 0.15
+- value coefficient: 0.5
+- epochs per rollout: 4
+- minibatch fraction: 0.5
+- value clip: 0.25
+- gradient norm: 0.5
+- IA learning rate: 1e-4
+- baseline PPO learning rate: 2e-4
+- IA entropy: 0.040 → 0.010
+- baseline PPO entropy: 0.030 → 0.008
+- PPO-Lagrangian dual LR: 0.012
+- initial multiplier: 0.40
+- maximum multiplier: 25
+
+## DQN-family protocol
+
+- hidden layers: 128, 128
+- gamma: 0.99
+- Adam LR: 5e-4
+- batch size: 128
+- replay capacity: 50,000
+- warm-up: 1,000 steps
+- train every 4 environment steps
+- target sync every 500 steps
+- epsilon: 1.00 → 0.05 over 70% of planned training
+- gradient norm limit: 10
+- deployment: greedy masked argmax
+
+## Seeds and horizons
+
+Independent master seeds:
 
 ```text
 11, 12, 13, 14, 15
 ```
 
-Training:
+Training: 600 episodes × 150 steps.
 
-```text
-600 episodes
-150 steps per episode
-```
+Held-out evaluation: 200 episodes × 300 steps.
 
-Held-out evaluation:
+PPO-family deployment is stochastic categorical using matched indexed uniforms within context. DQN-family deployment is greedy masked argmax. MaxWeight is deterministic.
 
-```text
-200 episodes
-300 steps per episode
-```
+## Training curriculum
 
-The training curriculum includes nominal, congestion-burst, emergency-surge, mixed-stress, and admission-pressure conditions. Twenty percent of training episodes retain a static intent; other episodes switch at 35% or 65% of the training horizon.
+Training scenarios:
 
-The held-out switching evaluation uses a 50% switch point.
+- nominal
+- congestion burst
+- emergency surge
+- mixed stress
+- admission pressure
 
-## 4. Proposed method
+Twenty percent of episodes retain a static intent; otherwise the intent switches at 35% or 65% of the training horizon. Held-out switching uses a 50% switch point.
 
-The manuscript method is **IA-PPO-CMDP**. Internal code identifiers may use `Intent-PPO-CMDP`.
+## Same-checkpoint shield experiment
 
-The frozen implementation combines:
+The primary shield experiment reuses the exact trained `Intent-PPO-CMDP` checkpoint and changes only deployment shield activation through `Intent-PPO-CMDP-FullPolicy-NoShield`.
 
-- universal intent-conditioned PPO;
-- target-centered online service-risk estimates;
-- outcome-pressure compilation;
-- a 45-step rolling risk memory;
-- a 90th-percentile upper-tail training statistic;
-- a deployment admission shield.
+## Terminal drain
 
-The training upper-tail statistic is distinct from the final episode-level CVaR95 evaluation metric.
+After the primary 300-step trajectory:
 
-## 5. Same-checkpoint shield experiment
+- arrivals are disabled;
+- minimum drain = 250 steps;
+- automatic extension is enabled;
+- maximum drain = 500 steps;
+- RNG state is saved before the drain and restored afterward.
 
-The primary causal shield experiment reuses the exact trained IA-PPO-CMDP policy checkpoint and changes only deployment-time shield activation.
+The terminal drain is a sensitivity analysis, not a replacement for the primary benchmark.
 
-This experiment must never be replaced by a comparison of independently trained shield-on and shield-off networks.
+## Statistics
 
-## 6. Terminal-drain sensitivity
-
-The primary deployment measurement window remains 300 steps.
-
-Afterward:
-
-- new arrivals are disabled;
-- a minimum 250-step drain is applied;
-- the drain may auto-extend up to 500 steps;
-- the RNG state is saved before the drain branch and restored afterward.
-
-The terminal drain is an accounting sensitivity and does not replace the primary 300-step benchmark.
-
-## 7. Statistical unit
-
-The five master seeds are the independent experimental units.
-
-Repeated episodes, intents, scenarios, and operating contexts are not treated as independent replicates.
-
-Primary uncertainty and paired comparisons use seed-level aggregation.
-
-## 8. Scripts to be staged
-
-The publication package is expected to retain cleaned versions of the following functional roles:
-
-```text
-viot_agentic_runner.py
-viot_agentic_intent.py
-run_q1_value_baselines.py
-run_terminal_drain_sensitivity.py
-evaluate_v44ec300_results.py
-validate_action_semantics.py
-validate_submission_results.py
-make_viot_manuscript_figures.py
-```
-
-Names may be reorganized into `src/`, `experiments/`, `validation/`, and `analysis/` during the audit.
-
-## 9. Files that will not be published directly
-
-The repository should not contain:
-
-- Python virtual environments;
-- `__pycache__`;
-- the full `outputs_agentic/` development tree;
-- obsolete development runs;
-- temporary logs;
-- machine-specific absolute Windows paths;
-- private credentials or tokens;
-- raw checkpoint caches unless explicitly selected for archival release.
-
-Curated processed results and plot-data files required to reproduce the manuscript figures and tables will be included.
-
-## 10. Final archival plan
-
-Before manuscript submission:
-
-1. audit and stage the final source;
-2. reproduce manuscript figures from the staged package;
-3. run validation/tests from a clean environment;
-4. freeze a paper release;
-5. make the repository public;
-6. archive the release with a DOI where possible;
-7. cite the archived version in the manuscript Code Availability statement.
+The five master seeds are the independent experimental units. Contexts and episodes are not treated as independent replicates. Aggregate static metrics are first averaged within each seed across the nine intent-scenario conditions. The manuscript uses seed-cluster percentile bootstrap intervals, paired seed differences, exact two-sided sign-flip tests, and Holm correction over the external comparisons for the primary risk endpoints.
