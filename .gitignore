@@ -1,0 +1,100 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+.venv*/
+venv/
+venv*/
+env/
+ENV/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+~$*
+tmp/
+temp/
+
+# Local notebooks
+.ipynb_checkpoints/
+
+# Large simulation outputs and caches
+outputs_agentic/
+policy_cache_v44/
+policy_cache*/
+checkpoints/
+checkpoint/
+runs/
+wandb/
+
+# Model binaries / large generated artifacts
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.pkl
+*.pickle
+*.joblib
+
+# Local archives
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+
+# Local analysis workbooks and raw generated exports
+*.xlsx
+*.xls
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# Local manuscript sources are maintained separately
+manuscript_private/
+
+# Secrets and environment variables
+.env
+.env.*
+*.pem
+*.key
+secrets.*
+
+# Keep curated publication assets under version control
+!results/
+!results/processed/
+!results/plot_data/
+!figures/
+!docs/
