@@ -1,0 +1,29 @@
+{
+  "independent_unit": "master seed",
+  "master_seeds": [
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "static_runs": [
+    "v44ec300_final_static",
+    "sota_dqn_final_static"
+  ],
+  "reliability_switch_runs": [
+    "v44ec300_final_reliability",
+    "sota_dqn_final_reliability"
+  ],
+  "latency_switch_runs": [
+    "v44ec300_final_latency",
+    "sota_dqn_final_latency"
+  ],
+  "causal_shield_run": "td4_final_admission",
+  "terminal_drain_pair": [
+    "v44ec300_final_static",
+    "td4_final_static"
+  ],
+  "bootstrap_resamples": 20000,
+  "note": "Static/switch figures merge the frozen V4.4E-Causal300 controllers with the matched SOTA DQN extension. CI bars are seed-cluster percentile bootstrap intervals after context averaging within seed."
+}

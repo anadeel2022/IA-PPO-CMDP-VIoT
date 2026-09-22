@@ -45,7 +45,6 @@ def main() -> None:
         if sha256(path) != row["sha256"]:
             errors.append(f"sha256 mismatch: {path}")
             continue
-
         obj = torch.load(path, map_location="cpu", weights_only=True)
         md = obj.get("metadata", {})
         checks = {
@@ -61,25 +60,18 @@ def main() -> None:
                 errors.append(f"{key} mismatch: {path}")
         seen.add((scheme, seed))
 
-    expected = {(scheme, seed) for scheme in EXPECTED_SCHEMES for seed in EXPECTED_SEEDS}
+    expected = {(s, seed) for s in EXPECTED_SCHEMES for seed in EXPECTED_SEEDS}
     if seen != expected:
-        errors.append(
-            f"checkpoint grid mismatch: missing={sorted(expected-seen)}, extra={sorted(seen-expected)}"
-        )
+        errors.append(f"checkpoint grid mismatch: missing={sorted(expected-seen)}, extra={sorted(seen-expected)}")
 
     if errors:
         print("CHECKPOINT VALIDATION: FAIL")
-        for error in errors:
-            print(" -", error)
+        for e in errors:
+            print(" -", e)
         raise SystemExit(2)
 
-    print(
-        f"CHECKPOINT VALIDATION: PASS ({len(rows)} files, signature={EXPECTED_SIGNATURE})"
-    )
-    print(
-        "Same-checkpoint shield ablation correctly reuses Intent-PPO-CMDP checkpoints; "
-        "no separate FullPolicy-NoShield file is expected."
-    )
+    print(f"CHECKPOINT VALIDATION: PASS ({len(rows)} files, signature={EXPECTED_SIGNATURE})")
+    print("Same-checkpoint shield ablation correctly reuses Intent-PPO-CMDP checkpoints; no separate FullPolicy-NoShield file is expected.")
 
 
 if __name__ == "__main__":

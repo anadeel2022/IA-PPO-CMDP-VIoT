@@ -2,13 +2,11 @@
 
 This repository includes the complete **paper-seed checkpoint set** needed to evaluate the learning methods without retraining.
 
+## Included checkpoint families
+
 All committed checkpoints use training signature `89b3003a441eeb26` and manuscript master seeds `11, 12, 13, 14, 15`.
 
-## PPO-family cache
-
-Directory: `policy_cache_v44/89b3003a441eeb26/`
-
-Included schemes:
+### PPO-family cache: `policy_cache_v44/89b3003a441eeb26/`
 
 - `PPO`
 - `PPO-Lagrangian`
@@ -16,30 +14,39 @@ Included schemes:
 - `Intent-PPO-CMDP-NoRisk`
 - `Intent-PPO-CMDP`
 
-Total: 25 checkpoints.
+There are 25 PPO-family checkpoints: 5 schemes × 5 paper seeds.
 
-## Value-based cache
-
-Directory: `policy_cache_sota_dqn/89b3003a441eeb26/`
-
-Included schemes:
+### Value-based cache: `policy_cache_sota_dqn/89b3003a441eeb26/`
 
 - `SOTA-DQN`
 - `SOTA-DuelingDDQN`
 
-Total: 10 checkpoints.
+There are 10 value-based checkpoints: 2 schemes × 5 paper seeds.
 
 ## Same-checkpoint shield ablation
 
-There is intentionally **no separate checkpoint** for `Intent-PPO-CMDP-FullPolicy-NoShield`. The code maps that deployment-only ablation to the corresponding `Intent-PPO-CMDP__seedXX.pt` checkpoint. Thus, the trained network is identical and only deployment admission shielding is disabled.
+There is intentionally **no separate checkpoint** for `Intent-PPO-CMDP-FullPolicy-NoShield`. The code maps that deployment-only ablation to the corresponding `Intent-PPO-CMDP__seedXX.pt` file. This is required for the causal same-checkpoint experiment: the learned network is identical and only deployment admission shielding is disabled.
 
 ## Excluded checkpoint files
 
-The development cache also contained development seeds `101--103` and a superseded training-signature directory `f763c5ad138c5b5b`. These are not part of the manuscript evaluation and are deliberately excluded.
+The uploaded development cache also contained:
 
-## Integrity
+- development seeds `101--103`; and
+- a superseded training-signature directory `f763c5ad138c5b5b`.
 
-`checkpoint_manifest.csv` records the scheme, seed, training signature, policy fingerprint, input/action dimensions, SHA-256 digest, and byte size for every committed checkpoint.
+Those files are not part of the manuscript evaluation and are deliberately excluded from the publication package.
+
+## Integrity manifest
+
+`checkpoint_manifest.csv` records for every committed checkpoint:
+
+- scheme;
+- seed;
+- training signature;
+- stored policy fingerprint;
+- input/action dimensions;
+- SHA-256 file digest; and
+- byte size.
 
 Run:
 
@@ -47,4 +54,4 @@ Run:
 python verify_checkpoints.py
 ```
 
-to validate all 35 checkpoint files.
+to verify the committed caches before evaluation.

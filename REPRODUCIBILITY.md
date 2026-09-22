@@ -152,6 +152,12 @@ Twenty percent of episodes retain a static intent; otherwise the intent switches
 
 The primary shield experiment reuses the exact trained `Intent-PPO-CMDP` checkpoint and changes only deployment shield activation through `Intent-PPO-CMDP-FullPolicy-NoShield`.
 
+## Frozen checkpoint package
+
+The repository includes the complete manuscript-seed checkpoint grid under training signature `89b3003a441eeb26`. PPO-family checkpoints are stored in `policy_cache_v44/89b3003a441eeb26/` and DQN-family checkpoints in `policy_cache_sota_dqn/89b3003a441eeb26/`. Development seeds and superseded training signatures are excluded. Run `python verify_checkpoints.py` before cached-policy evaluation.
+
+The deployment-only `Intent-PPO-CMDP-FullPolicy-NoShield` condition reuses the corresponding full IA checkpoint and therefore has no independent model file.
+
 ## Terminal drain
 
 After the primary 300-step trajectory:

@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "warnings": [],
+  "checks": {
+    "schemes": [
+      "SOTA-DQN",
+      "SOTA-DuelingDDQN"
+    ],
+    "training_steps": 150,
+    "evaluation_steps": 300,
+    "eval_episodes": 200,
+    "evaluation_action_mode": "greedy",
+    "expected_rows": 30,
+    "observed_rows": 30,
+    "duplicate_rows": 0,
+    "seed_scheme_groups_with_missing_fingerprint": 0,
+    "seed_scheme_groups_with_multiple_fingerprints": 0,
+    "request_conservation_error_max_abs": 0.0,
+    "finite_fraction::weighted_violation_mean": 1.0,
+    "finite_fraction::weighted_violation_cvar95": 1.0,
+    "finite_fraction::blocking_mean": 1.0,
+    "finite_fraction::interruption_mean": 1.0,
+    "finite_fraction::deadline_exposure_mean": 1.0,
+    "finite_fraction::service_success_rate_mean": 1.0,
+    "finite_fraction::unfinished_rate_mean": 1.0,
+    "finite_fraction::throughput_mean_mbps": 1.0,
+    "finite_fraction::fairness_mean": 1.0,
+    "max_abs::shield_override_rate_mean": 0.0,
+    "max_abs::shield_filter_active_rate": 0.0,
+    "max_abs::shield_filtered_action_fraction": 0.0,
+    "rows_marked_training_reused": 30
+  }
+}

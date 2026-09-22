@@ -2,7 +2,7 @@
 
 Audit date: 2026-09-22
 
-The uploaded development package and the separately supplied frozen policy cache were reviewed before staging this publication repository.
+The uploaded development package was reviewed before staging this publication repository.
 
 ## Checks passed
 
@@ -12,7 +12,6 @@ The uploaded development package and the separately supplied frozen policy cache
 - DQN/Dueling Double DQN extension families: baseline validation **PASS**.
 - Terminal-drain audit: **PASS** for elimination of residual right censoring, exact request conservation, 300-step measurement-window identity, and RNG-stream preservation.
 - Final manuscript plot data were regenerated from the curated result folders and matched the supplied manuscript `plot_data` CSVs exactly.
-- Frozen checkpoint validation: **PASS (35 files)** under training signature `89b3003a441eeb26`.
 - No API keys, passwords, access tokens, or author e-mail addresses were detected in the staged source files.
 
 ## Items intentionally excluded
@@ -27,7 +26,7 @@ The uploaded development package and the separately supplied frozen policy cache
 
 ## Frozen checkpoints included
 
-The publication package includes the complete checkpoint grid required for the manuscript seeds under training signature `89b3003a441eeb26`:
+The publication package now includes the complete checkpoint grid required for the manuscript seeds under training signature `89b3003a441eeb26`:
 
 - 25 PPO-family checkpoints: `PPO`, `PPO-Lagrangian`, `PPO_CMDP`, `Intent-PPO-CMDP-NoRisk`, and `Intent-PPO-CMDP`, each for seeds 11--15;
 - 10 value-based checkpoints: `SOTA-DQN` and `SOTA-DuelingDDQN`, each for seeds 11--15.
