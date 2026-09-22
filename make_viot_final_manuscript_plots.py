@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Final manuscript plot generator for the frozen V-IoT V4.4E-Causal300 study.
 
 This script supersedes the older make_viot_manuscript_figures.py for the final paper.
@@ -10,8 +10,8 @@ Figures generated
 -----------------
 Fig02_Final_Static_Benchmark    : 4-panel matched static benchmark
 Fig03_Final_Context_Heatmap     : 7 x 9 weighted-violation context heatmap
-Fig04_Final_Intent_Switching    : post-switch violation, mode shift, adaptation time
-Fig05_Final_Causal_Shield       : same-checkpoint shield ON/OFF under terminal-complete admission pressure
+Fig05_Final_Intent_Switching    : post-switch violation, mode shift, adaptation time
+Fig04_Final_Causal_Shield       : same-checkpoint shield ON/OFF under terminal-complete admission pressure
 Fig06_Final_Terminal_Drain      : primary 300-step vs terminal-complete IA sensitivity
 
 Usage
@@ -235,7 +235,7 @@ def fig04_switch(root: Path, outdir: Path, tabdir: Path, dpi: int, n_boot: int):
     for m in metrics:
         rr = rel[m].copy(); rr["switch"] = "Balanced to reliability-first"
         ll = lat[m].copy(); ll["switch"] = "Balanced to latency-critical"
-        pd.concat([rr,ll], ignore_index=True).to_csv(tabdir / f"Fig04_{m}.csv", index=False)
+        pd.concat([rr,ll], ignore_index=True).to_csv(tabdir / f"Fig05_{m}.csv", index=False)
 
     fig, axes = plt.subplots(1, 3, figsize=(14.0, 4.35))
     x = np.arange(len(FINAL_SCHEMES)); w = 0.36
@@ -264,7 +264,7 @@ def fig04_switch(root: Path, outdir: Path, tabdir: Path, dpi: int, n_boot: int):
         ax.set_axisbelow(True)
     axes[0].legend(frameon=False, loc="upper left")
     fig.tight_layout(w_pad=1.1)
-    save(fig, outdir, "Fig04_Final_Intent_Switching", dpi)
+    save(fig, outdir, "Fig05_Final_Intent_Switching", dpi)
 
 
 def paired_metric_summary(df: pd.DataFrame, scheme: str, metrics: list[str], n_boot: int):
@@ -283,13 +283,13 @@ def fig05_shield(root: Path, outdir: Path, tabdir: Path, dpi: int, n_boot: int):
     on_seed, on_sum = paired_metric_summary(df, on, metrics, n_boot)
     off_seed, off_sum = paired_metric_summary(df, off, metrics, n_boot)
     on_sum["condition"]="Shield ON"; off_sum["condition"]="Shield OFF"
-    pd.concat([on_sum,off_sum], ignore_index=True).to_csv(tabdir / "Fig05_Causal_Shield_Summary.csv", index=False)
+    pd.concat([on_sum,off_sum], ignore_index=True).to_csv(tabdir / "Fig04_Causal_Shield_Summary.csv", index=False)
     paired = on_seed[["seed"]].copy()
     for m in metrics:
         paired[f"{m}_on"] = on_seed[m].to_numpy()
         paired[f"{m}_off"] = off_seed[m].to_numpy()
         paired[f"{m}_on_minus_off"] = paired[f"{m}_on"] - paired[f"{m}_off"]
-    paired.to_csv(tabdir / "Fig05_Causal_Shield_PairedSeeds.csv", index=False)
+    paired.to_csv(tabdir / "Fig04_Causal_Shield_PairedSeeds.csv", index=False)
 
     fig, axes = plt.subplots(2,2,figsize=(9.2,6.6))
     titles = ["(a) Blocking rate", "(b) Service-success rate", "(c) Weighted violation", r"(d) CVaR$_{95}$"]
@@ -305,7 +305,7 @@ def fig05_shield(root: Path, outdir: Path, tabdir: Path, dpi: int, n_boot: int):
         ax.set_xticks([0,1]); ax.set_xticklabels(["Shield ON","Shield OFF"])
         ax.set_ylabel(ylabel); ax.set_title(title); ax.grid(axis="y",alpha=.22); ax.set_axisbelow(True)
     fig.tight_layout(w_pad=1.2,h_pad=1.3)
-    save(fig,outdir,"Fig05_Final_Causal_Shield",dpi)
+    save(fig,outdir,"Fig04_Final_Causal_Shield",dpi)
 
 
 def fig06_drain(root: Path, outdir: Path, tabdir: Path, dpi: int):
@@ -362,3 +362,4 @@ def main():
     print(f"Generated final manuscript plots in {out.resolve()}")
 
 if __name__=="__main__": main()
+
