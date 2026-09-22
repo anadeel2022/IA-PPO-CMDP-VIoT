@@ -8,7 +8,7 @@ Target journal: *Internet of Things* (Elsevier).
 
 ## What is included
 
-This repository contains the frozen simulation and learning code used for the paper, publication orchestration scripts, validation tests, curated seed-level result summaries, and the scripts/data used to generate the manuscript result figures.
+This repository contains the frozen simulation and learning code used for the paper, publication orchestration scripts, validation tests, curated seed-level result summaries, the exact plotting data used for the manuscript result figures, and the complete manuscript-seed checkpoint grid.
 
 IA-PPO-CMDP combines a universal intent-conditioned PPO scheduler with service-risk compilation, rolling risk memory, an upper-tail training term, and a deployment admission shield. The simulator operates at the request level and enforces exact request conservation.
 
@@ -44,10 +44,11 @@ Then run:
 ```bash
 python -m pytest -q
 python validate_action_semantics.py
+python verify_checkpoints.py
 python run_paper_reproduction.py --mode check
 ```
 
-The staged package was audited with **10 passing pytest tests** and a passing action-semantics validation.
+The staged package was audited with **10 passing pytest tests**, a passing action-semantics validation, and **35/35 validated frozen checkpoints**.
 
 ## Reproduce manuscript figures without retraining
 
@@ -98,14 +99,27 @@ The primary comparison remains the 300-step held-out deployment experiment. Term
 - `results/processed/`: curated seed-level final outputs.
 - `results/plot_data/`: exact plotting data committed with the paper package.
 - `figures/`: final result figures in PDF/PNG/SVG.
+- `policy_cache_v44/`: frozen PPO-family paper-seed checkpoints.
+- `policy_cache_sota_dqn/`: frozen DQN-family paper-seed checkpoints.
+- `CHECKPOINTS.md`: checkpoint inclusion and same-checkpoint rationale.
+- `checkpoint_manifest.csv`: checkpoint fingerprints and SHA-256 digests.
+- `verify_checkpoints.py`: checkpoint integrity validator.
 - `docs/ENVIRONMENT.md`: recorded final execution environment.
 - `docs/RESULTS_PROVENANCE.md`: result-folder mapping.
 - `docs/CODE_AUDIT.md`: publication-safety audit.
 - `REPRODUCIBILITY.md`: detailed frozen protocol.
 
-## Checkpoints
+## Frozen checkpoints
 
-Model checkpoint caches are intentionally not committed to Git because the complete paper package should not mix only a subset of trained policies. If checkpoint archival is required, the full frozen checkpoint set should be archived together with a versioned release/DOI rather than partially uploaded.
+The publication package includes the complete manuscript-seed checkpoint set for all learning comparators: **25 PPO-family checkpoints and 10 DQN-family checkpoints**, all under training signature `89b3003a441eeb26`. Development seeds and superseded-signature checkpoints are excluded.
+
+The deployment-only `Intent-PPO-CMDP-FullPolicy-NoShield` ablation intentionally has no separate model file because it reuses the identical `Intent-PPO-CMDP` checkpoint. See `CHECKPOINTS.md` and `checkpoint_manifest.csv`.
+
+Verify the checkpoint package with:
+
+```bash
+python verify_checkpoints.py
+```
 
 ## Citation and license
 
