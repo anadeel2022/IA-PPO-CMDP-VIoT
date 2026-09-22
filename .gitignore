@@ -1,7 +1,6 @@
 # Python bytecode and caches
 __pycache__/
 *.py[cod]
-*$py.class
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -23,35 +22,13 @@ ENV/
 Thumbs.db
 desktop.ini
 
-# Python packaging
-build/
-dist/
-*.egg-info/
-.eggs/
-
-# Logs and temporary files
-*.log
-*.tmp
-*.temp
-*.bak
-*.swp
-~$*
-tmp/
-temp/
-
-# Local notebooks
-.ipynb_checkpoints/
-
-# Large simulation outputs and caches
+# Generated local runs and arbitrary checkpoint caches
 outputs_agentic/
-policy_cache_v44/
+runs/
 policy_cache*/
 checkpoints/
-checkpoint/
-runs/
-wandb/
 
-# Model binaries / large generated artifacts
+# Model binaries and local archives
 *.pt
 *.pth
 *.ckpt
@@ -59,42 +36,36 @@ wandb/
 *.pkl
 *.pickle
 *.joblib
-
-# Local archives
 *.zip
 *.7z
 *.rar
 *.tar
 *.tar.gz
 
-# Local analysis workbooks and raw generated exports
-*.xlsx
-*.xls
-
-# LaTeX build artifacts
-*.aux
-*.bbl
-*.blg
-*.fdb_latexmk
-*.fls
+# Logs / temporary files
 *.log
-*.out
-*.synctex.gz
-*.toc
+*.tmp
+*.temp
+*.bak
+*.swp
+~$*
 
-# Local manuscript sources are maintained separately
-manuscript_private/
-
-# Secrets and environment variables
+# Secrets / environment files
 .env
 .env.*
 *.pem
 *.key
 secrets.*
 
-# Keep curated publication assets under version control
-!results/
-!results/processed/
-!results/plot_data/
-!figures/
-!docs/
+# Local manuscript and analysis workbooks
+manuscript_private/
+*.xlsx
+*.xls
+
+# Keep the curated frozen paper checkpoints under version control.
+!policy_cache_v44/
+!policy_cache_v44/89b3003a441eeb26/
+!policy_cache_v44/89b3003a441eeb26/*.pt
+!policy_cache_sota_dqn/
+!policy_cache_sota_dqn/89b3003a441eeb26/
+!policy_cache_sota_dqn/89b3003a441eeb26/*.pt
